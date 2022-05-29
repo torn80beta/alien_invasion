@@ -22,9 +22,9 @@ class Ship:
     def update(self):
         """Обновление позиции корабля с учетом флага"""
         # Обновляется атрибут x, не rect
-        if self.moving_right:
+        if self.moving_right and self.rect.right < self.screen_rect.right:
             self.rect.x += self.settings.sheep_speed
-        if self.moving_left:
+        if self.moving_left and self.rect.left > 0:
             self.rect.x -= self.settings.sheep_speed
         #Обновление атрибута rect на основании self.x (Почему этот участок кода не работает????)
         #self.rect.x = self.x
