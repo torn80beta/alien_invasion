@@ -17,6 +17,7 @@ class AlienInvasion:
         self.settings.screen_height = self.screen.get_rect().height
         #Оконный режим:
         #self.screen = pygame.display.set_mode((self.settings.screen_width, self.settings.screen_height))
+
         pygame.display.set_caption('Alien Invasion based on the Eric Matthes book by Alex Ostrovskyi')
         self.ship = Ship(self)
 
@@ -32,19 +33,27 @@ class AlienInvasion:
 
     def _check_keydown_events(self, event):
         """Реагирует на нажатие клавиш"""
-        if event.key == pygame.K_RIGHT:
+        if event.key == pygame.K_d:
             self.ship.moving_right = True
-        elif event.key == pygame.K_LEFT:
+        elif event.key == pygame.K_a:
             self.ship.moving_left = True
+        elif event.key == pygame.K_w:
+            self.ship.moving_up = True
+        elif event.key == pygame.K_s:
+            self.ship.moving_down = True
         elif event.key == pygame.K_q:
             sys.exit()
 
     def _check_keyup_events(self, event):
         """Реагирует на отпускание клавиш"""
-        if event.key == pygame.K_RIGHT:
+        if event.key == pygame.K_d:
             self.ship.moving_right = False
-        elif event.key == pygame.K_LEFT:
+        elif event.key == pygame.K_a:
             self.ship.moving_left = False
+        elif event.key == pygame.K_w:
+            self.ship.moving_up = False
+        elif event.key == pygame.K_s:
+            self.ship.moving_down = False
 
     def _update_screen(self):
         """Перерисовка экрана при каждом проходе цикла"""

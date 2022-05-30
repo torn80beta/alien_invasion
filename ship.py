@@ -18,6 +18,8 @@ class Ship:
         """Флаг перемещения"""
         self.moving_right = False
         self.moving_left = False
+        self.moving_up = False
+        self.moving_down = False
 
     def update(self):
         """Обновление позиции корабля с учетом флага"""
@@ -26,6 +28,10 @@ class Ship:
             self.rect.x += self.settings.sheep_speed
         if self.moving_left and self.rect.left > 0:
             self.rect.x -= self.settings.sheep_speed
+        if self.moving_up and self.rect.top > 0:
+            self.rect.y -= self.settings.sheep_speed
+        if self.moving_down and self.rect.bottom < self.screen_rect.bottom:
+            self.rect.y += self.settings.sheep_speed
         #Обновление атрибута rect на основании self.x (Почему этот участок кода не работает????)
         #self.rect.x = self.x
 

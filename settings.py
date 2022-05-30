@@ -4,8 +4,11 @@ class Settings():
     def __init__(self):
         """Инициализация настроек игры"""
         #Параметры экрана для оконного режима:
-        #self.screen_width = 1200
-        #self.screen_height = 800
-        self.bg_color = (17, 30, 108)
+        # self.screen_width = 1200
+        # self.screen_height = 800
+        # Black color:
+        self.bg_color = (0, 0, 0)
+        #Blue color:
+        # self.bg_color = (17, 30, 108)
         #Настройки корабля
         self.sheep_speed = 1
