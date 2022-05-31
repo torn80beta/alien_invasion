@@ -9,7 +9,7 @@ class Ship:
         self.settings = ai_game.settings
         self.screen_rect = ai_game.screen.get_rect()
         """Загрузка изображения корабля и получение прямоугольника"""
-        self.image = pygame.image.load('images/ship.png')
+        self.image = pygame.image.load('images/ship_1.png')
         self.rect = self.image.get_rect()
         """Задание позиции для каждого нового корабля"""
         self.rect.midbottom = self.screen_rect.midbottom
