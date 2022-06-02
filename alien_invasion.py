@@ -6,6 +6,7 @@ from bullet import Bullet
 from alien import Alien
 from space import Space
 
+
 class AlienInvasion:
     """Класс для управления ресурсами и поведением игры"""
 
@@ -80,6 +81,11 @@ class AlienInvasion:
             if bullet.rect.bottom <= 0:
                 self.bullets.remove(bullet)
 
+    def _update_aliens(self):
+        """Обновление позиции всех пришельцев во флоте при достижении флотом края экрана"""
+        self._check_fleet_edges()
+        self.aliens.update()
+
     def _create_space_patch(self, patch_x, patch_y):
         #Создание и размещение первого участка
         patch = Space(self)
@@ -128,6 +134,19 @@ class AlienInvasion:
             for alien_number in range(number_aliens_x):
                 self._create_alien(alien_number, row_number)
 
+    def _check_fleet_edges(self):
+        """Реагирует на достижение пришелцами края экрана"""
+        for alien in self.aliens.sprites():
+            if alien._check_edges():
+                self._change_fleet_direction()
+                break
+
+    def _change_fleet_direction(self):
+        """Опускает весь флот и меняет направление флота"""
+        for alien in self.aliens.sprites():
+            alien.rect.y += self.settings.fleet_drop_speed
+        self.settings.fleet_direction *= -1
+
     def _update_screen(self):
         """Перерисовка экрана при каждом проходе цикла"""
         self.screen.fill(self.settings.bg_color)
@@ -147,6 +166,7 @@ class AlienInvasion:
             self._check_events()
             self.ship.update()
             self._update_bullets()
+            self._update_aliens()
             self._update_screen()
 
 
