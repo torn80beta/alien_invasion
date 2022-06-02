@@ -4,7 +4,7 @@ from settings import Settings
 from ship import Ship
 from bullet import Bullet
 from alien import Alien
-
+from space import Space
 
 class AlienInvasion:
     """Класс для управления ресурсами и поведением игры"""
@@ -24,7 +24,8 @@ class AlienInvasion:
         self.ship = Ship(self)
         self.bullets = pygame.sprite.Group()
         self.aliens = pygame.sprite.Group()
-
+        self.spaces = pygame.sprite.Group()
+        self._create_space()
         self._create_fleet()
 
     def _check_events(self):
@@ -79,6 +80,27 @@ class AlienInvasion:
             if bullet.rect.bottom <= 0:
                 self.bullets.remove(bullet)
 
+    def _create_space_patch(self, patch_x, patch_y):
+        #Создание и размещение первого участка
+        patch = Space(self)
+        patch_width, patch_height = patch.rect.size
+        patch.x = patch_width * patch_x
+        patch.rect.x = patch.x
+        patch.y = patch_height * patch_y
+        patch.rect.y = patch.y
+        self.spaces.add(patch)
+
+    def _create_space(self):
+        #Заполнение поля участками неба
+        space = Space(self)
+        space_width, space_heigt = space.rect.size
+        patches_numbers_x = self.settings.screen_width // space_width
+        patches_numbers_y = self.settings.screen_height // space_heigt
+        for patch_y in range(patches_numbers_y):
+            for patch_x in range(patches_numbers_x):
+                self._create_space_patch(patch_x, patch_y)
+
+
     def _create_alien(self, alien_number, row_number):
         #Создание пришелца и размещение его в ряду
         alien = Alien(self)
@@ -109,10 +131,12 @@ class AlienInvasion:
     def _update_screen(self):
         """Перерисовка экрана при каждом проходе цикла"""
         self.screen.fill(self.settings.bg_color)
+        self.spaces.draw(self.screen)
         self.ship.blitme()
         for bullet in self.bullets.sprites():
             bullet.draw_bullet()
         self.aliens.draw(self.screen)
+
 
         """Отображение последнего прорисованого экрана"""
         pygame.display.flip()
