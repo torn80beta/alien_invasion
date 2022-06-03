@@ -10,3 +10,5 @@ class Space(Sprite):
         self.image = pygame.image.load('images/space_1.bmp')
         self.rect = self.image.get_rect()
         self.x = float(self.rect.x)
+        self.rect.y = -self.rect.height
+        self.y = float(self.rect.y)

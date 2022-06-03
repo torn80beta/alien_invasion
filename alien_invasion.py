@@ -16,8 +16,8 @@ class AlienInvasion:
         self.settings = Settings()
         #Fullscreen mode:
         self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
-        self.settings.screen_width = self.screen.get_rect().width
-        self.settings.screen_height = self.screen.get_rect().height
+        self.screen_width = self.screen.get_rect().width
+        self.screen_height = self.screen.get_rect().height
         #Оконный режим:
         #self.screen = pygame.display.set_mode((self.settings.screen_width, self.settings.screen_height))
 
@@ -93,18 +93,36 @@ class AlienInvasion:
         patch.x = patch_width * patch_x
         patch.rect.x = patch.x
         patch.y = patch_height * patch_y
-        patch.rect.y = patch.y
+        patch.rect.y = patch.y - patch_height
         self.spaces.add(patch)
 
     def _create_space(self):
         #Заполнение поля участками неба
         space = Space(self)
-        space_width, space_heigt = space.rect.size
-        patches_numbers_x = self.settings.screen_width // space_width
-        patches_numbers_y = self.settings.screen_height // space_heigt
+        space_width, space_height = space.rect.size
+        patches_numbers_x = self.screen_width // space_width
+        patches_numbers_y = self.screen_height // space_height + 2
         for patch_y in range(patches_numbers_y):
             for patch_x in range(patches_numbers_x):
-                self._create_space_patch(patch_x, patch_y)
+                if len(self.spaces) < 30:
+                    self._create_space_patch(patch_x, patch_y)
+            #print(len(self.spaces), 'Spaces created')
+
+    def _space_movement(self):
+        #Движение карты
+        for space in self.spaces.sprites():
+            space.rect.y += 1
+
+    def _update_space(self):
+        #Удаление участков карты вышедших за пределы экрана и создание новых
+        self.spaces.update()
+        for space in self.spaces.copy():
+            if space.rect.top >= self.screen_height:
+                self.spaces.remove(space)
+                #print(len(self.spaces), 'Space removed')
+        if len(self.spaces) < 30:
+                self._create_space()
+
 
 
     def _create_alien(self, alien_number, row_number):
@@ -122,11 +140,11 @@ class AlienInvasion:
         #Интервал между пришелцами равен ширине пришельца
         alien = Alien(self)
         alien_width, alien_height = alien.rect.size
-        available_space_x = self.settings.screen_width - (2 * alien_width)
+        available_space_x = self.screen_width - (2 * alien_width)
         number_aliens_x = available_space_x // (2 * alien_width)
         """Определение количества рядов помещающихся на экране"""
         ship_height = self.ship.rect.height
-        available_space_y = (self.settings.screen_height - (3 * alien_height) - ship_height)
+        available_space_y = (self.screen_height - (3 * alien_height) - ship_height)
         number_rows = available_space_y // (2 * alien_height)
 
         #Создание флота вторжения
@@ -151,6 +169,7 @@ class AlienInvasion:
         """Перерисовка экрана при каждом проходе цикла"""
         self.screen.fill(self.settings.bg_color)
         self.spaces.draw(self.screen)
+
         self.ship.blitme()
         for bullet in self.bullets.sprites():
             bullet.draw_bullet()
@@ -164,6 +183,8 @@ class AlienInvasion:
         """Запуск основного цикла игры"""
         while True:
             self._check_events()
+            self._space_movement()
+            self._update_space()
             self.ship.update()
             self._update_bullets()
             self._update_aliens()
