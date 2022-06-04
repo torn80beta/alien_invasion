@@ -18,8 +18,10 @@ class AlienInvasion:
         self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
         self.screen_width = self.screen.get_rect().width
         self.screen_height = self.screen.get_rect().height
-        #Оконный режим:
-        #self.screen = pygame.display.set_mode((self.settings.screen_width, self.settings.screen_height))
+        #Параметры экрана для оконного режима:
+        # self.screen = pygame.display.set_mode((self.settings.screen_width, self.settings.screen_height))
+        # self.screen_width = 1600
+        # self.screen_height = 810
 
         pygame.display.set_caption('Alien Invasion based on the Eric Matthes book by Alex Ostrovskyi')
         self.ship = Ship(self)
@@ -101,12 +103,13 @@ class AlienInvasion:
         space = Space(self)
         space_width, space_height = space.rect.size
         patches_numbers_x = self.screen_width // space_width
-        patches_numbers_y = self.screen_height // space_height + 2
+        patches_numbers_y = self.screen_height // space_height + 1
+        total_patches = patches_numbers_x * patches_numbers_y
         for patch_y in range(patches_numbers_y):
             for patch_x in range(patches_numbers_x):
-                if len(self.spaces) < 30:
+                if len(self.spaces) < total_patches:
                     self._create_space_patch(patch_x, patch_y)
-            #print(len(self.spaces), 'Spaces created')
+            print(len(self.spaces), 'Spaces created')
 
     def _space_movement(self):
         #Движение карты
@@ -119,11 +122,8 @@ class AlienInvasion:
         for space in self.spaces.copy():
             if space.rect.top >= self.screen_height:
                 self.spaces.remove(space)
-                #print(len(self.spaces), 'Space removed')
-        if len(self.spaces) < 30:
-                self._create_space()
-
-
+                print(len(self.spaces), 'Space removed')
+        self._create_space()
 
     def _create_alien(self, alien_number, row_number):
         #Создание пришелца и размещение его в ряду
