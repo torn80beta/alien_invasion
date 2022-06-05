@@ -25,17 +25,21 @@ class Ship:
         """Обновление позиции корабля с учетом флага"""
         # Обновляется атрибут x, не rect
         if self.moving_right and self.rect.right < self.screen_rect.right:
-            self.rect.x += self.settings.sheep_speed
+            self.rect.x += self.settings.ship_speed
         if self.moving_left and self.rect.left > 0:
-            self.rect.x -= self.settings.sheep_speed
+            self.rect.x -= self.settings.ship_speed
         if self.moving_up and self.rect.top > 0:
-            self.rect.y -= self.settings.sheep_speed
+            self.rect.y -= self.settings.ship_speed
         if self.moving_down and self.rect.bottom < self.screen_rect.bottom:
-            self.rect.y += self.settings.sheep_speed
+            self.rect.y += self.settings.ship_speed
         #Обновление атрибута rect на основании self.x (Почему этот участок кода не работает????)
         #self.rect.x = self.x
-
 
     def blitme(self):
         """Отрисовка корабля в текущей позиции"""
         self.screen.blit(self.image, self.rect)
+
+    def center_ship(self):
+        """Размещение корабля по центру нижней части экрана"""
+        self.rect.midbottom = self.screen_rect.midbottom
+        self.x = float(self.rect.x)

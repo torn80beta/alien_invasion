@@ -1,6 +1,8 @@
 import sys
+from time import sleep
 import pygame
 from settings import Settings
+from game_stats import GameStats
 from ship import Ship
 from bullet import Bullet
 from alien import Alien
@@ -24,6 +26,8 @@ class AlienInvasion:
         # self.screen_height = 810
 
         pygame.display.set_caption('Alien Invasion based on the Eric Matthes book by Alex Ostrovskyi')
+        #Создание экземпляра для хранения игровой статистики
+        self.stats = GameStats(self)
         self.ship = Ship(self)
         self.bullets = pygame.sprite.Group()
         self.aliens = pygame.sprite.Group()
@@ -94,10 +98,26 @@ class AlienInvasion:
             self.bullets.empty()
             self._create_fleet()
 
+    def _ship_hip(self):
+        """Обработка столкновений корабля с пришельцем"""
+        #Уменьшение количества оставшихся кораблей
+        self.stats.ships_left -= 1
+        #Очистка списка пришельцев и снарядов
+        self.aliens.empty()
+        self.bullets.empty()
+        #Создание нового фота и размещение нового корабля
+        self._create_fleet()
+        self.ship.center_ship()
+        #Пауза
+        sleep(0.5)
+
     def _update_aliens(self):
         """Обновление позиции всех пришельцев во флоте при достижении флотом края экрана"""
         self._check_fleet_edges()
         self.aliens.update()
+        #Проверка столкновений корабля с прешельцем
+        if pygame.sprite.spritecollideany(self.ship, self.aliens):
+            self._ship_hip()
 
     def _create_space_patch(self, patch_x, patch_y):
         #Создание и размещение первого участка
@@ -120,7 +140,7 @@ class AlienInvasion:
             for patch_x in range(patches_numbers_x):
                 if len(self.spaces) < total_patches:
                     self._create_space_patch(patch_x, patch_y)
-            print(len(self.spaces), 'Spaces created')
+            #print(len(self.spaces), 'Spaces created')
 
     def _space_movement(self):
         #Движение карты
@@ -133,7 +153,7 @@ class AlienInvasion:
         for space in self.spaces.copy():
             if space.rect.top >= self.screen_height:
                 self.spaces.remove(space)
-                print(len(self.spaces), 'Space removed')
+                #print(len(self.spaces), 'Space removed')
         self._create_space()
 
     def _create_alien(self, alien_number, row_number):
