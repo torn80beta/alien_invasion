@@ -98,18 +98,22 @@ class AlienInvasion:
             self.bullets.empty()
             self._create_fleet()
 
-    def _ship_hip(self):
+    def _ship_hit(self):
         """Обработка столкновений корабля с пришельцем"""
-        #Уменьшение количества оставшихся кораблей
-        self.stats.ships_left -= 1
-        #Очистка списка пришельцев и снарядов
-        self.aliens.empty()
-        self.bullets.empty()
-        #Создание нового фота и размещение нового корабля
-        self._create_fleet()
-        self.ship.center_ship()
-        #Пауза
-        sleep(0.5)
+        if self.stats.ships_left > 0:
+            #Уменьшение количества оставшихся кораблей
+            self.stats.ships_left -= 1
+            #Очистка списка пришельцев и снарядов
+            self.aliens.empty()
+            self.bullets.empty()
+            #Создание нового фота и размещение нового корабля
+            self._create_fleet()
+            self.ship.center_ship()
+            #Пауза
+            sleep(0.5)
+        else:
+            self.stats.game_active = False
+            sys.exit()
 
     def _update_aliens(self):
         """Обновление позиции всех пришельцев во флоте при достижении флотом края экрана"""
@@ -117,7 +121,9 @@ class AlienInvasion:
         self.aliens.update()
         #Проверка столкновений корабля с прешельцем
         if pygame.sprite.spritecollideany(self.ship, self.aliens):
-            self._ship_hip()
+            self._ship_hit()
+        #Проверка, добрались ли пришельцы до нижнего края экрана
+        self._check_aliens_bottom()
 
     def _create_space_patch(self, patch_x, patch_y):
         #Создание и размещение первого участка
@@ -140,6 +146,7 @@ class AlienInvasion:
             for patch_x in range(patches_numbers_x):
                 if len(self.spaces) < total_patches:
                     self._create_space_patch(patch_x, patch_y)
+            #Проверка правильности заполнения карты участками неба
             #print(len(self.spaces), 'Spaces created')
 
     def _space_movement(self):
@@ -153,6 +160,7 @@ class AlienInvasion:
         for space in self.spaces.copy():
             if space.rect.top >= self.screen_height:
                 self.spaces.remove(space)
+                #Проверка правильности удаления участков звездного неба вышедших за границы экрана
                 #print(len(self.spaces), 'Space removed')
         self._create_space()
 
@@ -196,6 +204,15 @@ class AlienInvasion:
             alien.rect.y += self.settings.fleet_drop_speed
         self.settings.fleet_direction *= -1
 
+    def _check_aliens_bottom(self):
+        """Проверка столкновения пришельцев с нижним краем экрана"""
+        screen_rect = self.screen.get_rect()
+        for alien in self.aliens.sprites():
+            if alien.rect.bottom >= screen_rect.bottom:
+                #Уменьшение количества оставшихся кораблей, размещение нового флота и корабля
+                self._ship_hit()
+                break
+
     def _update_screen(self):
         """Перерисовка экрана при каждом проходе цикла"""
         self.screen.fill(self.settings.bg_color)
@@ -214,11 +231,13 @@ class AlienInvasion:
         """Запуск основного цикла игры"""
         while True:
             self._check_events()
-            self._space_movement()
-            self._update_space()
-            self.ship.update()
-            self._update_bullets()
-            self._update_aliens()
+
+            if self.stats.game_active:
+                self._space_movement()
+                self._update_space()
+                self.ship.update()
+                self._update_bullets()
+                self._update_aliens()
             self._update_screen()
 
 
