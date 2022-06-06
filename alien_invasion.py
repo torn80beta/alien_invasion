@@ -53,7 +53,8 @@ class AlienInvasion:
 
     def _check_play_button(self, mouse_pos):
         """Запуск новой игры при нажатии кнопки Play"""
-        if self.play_button.rect.collidepoint(mouse_pos):
+        button_clicked = self.play_button.rect.collidepoint(mouse_pos)
+        if button_clicked and not self.stats.game_active:
             #Сброс игровой статистики
             self.stats.reset_stats()
             self.stats.game_active = True
@@ -63,7 +64,7 @@ class AlienInvasion:
             #Создание нового флота и размещение нового корабля
             self._create_fleet()
             self.ship.center_ship()
-            
+
     def _check_keydown_events(self, event):
         """Реагирует на нажатие клавиш"""
         if event.key == pygame.K_d:
