@@ -64,6 +64,8 @@ class AlienInvasion:
             #Создание нового флота и размещение нового корабля
             self._create_fleet()
             self.ship.center_ship()
+            #Скрытие указателя мыши
+            pygame.mouse.set_visible(False)
 
     def _check_keydown_events(self, event):
         """Реагирует на нажатие клавиш"""
@@ -133,6 +135,7 @@ class AlienInvasion:
             sleep(0.5)
         else:
             self.stats.game_active = False
+            pygame.mouse.set_visible(True)
 
     def _update_aliens(self):
         """Обновление позиции всех пришельцев во флоте при достижении флотом края экрана"""
