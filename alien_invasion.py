@@ -3,6 +3,7 @@ from time import sleep
 import pygame
 from settings import Settings
 from game_stats import GameStats
+from scoreboard import Scoreboard
 from ship import Ship
 from bullet import Bullet
 from alien import Alien
@@ -27,8 +28,9 @@ class AlienInvasion:
         # self.screen_height = 810
 
         pygame.display.set_caption('Alien Invasion based on the Eric Matthes book by Alex Ostrovskyi')
-        #Создание экземпляра для хранения игровой статистики
+        #Создание экземпляра для хранения игровой статистики и панели результатов
         self.stats = GameStats(self)
+        self.sb = Scoreboard(self)
         self.ship = Ship(self)
         self.bullets = pygame.sprite.Group()
         self.aliens = pygame.sprite.Group()
@@ -55,6 +57,7 @@ class AlienInvasion:
         # Сброс игровой статистики
         self.stats.reset_stats()
         self.stats.game_active = True
+        self.sb.prep_score()
         # Очистка списка пришельцев и снарядов
         self.aliens.empty()
         self.bullets.empty()
@@ -86,7 +89,7 @@ class AlienInvasion:
             sys.exit()
         elif event.key == pygame.K_SPACE:
             self._fire_bullet()
-        #Начало игры с помощью клавиши 'r'
+        #Начало игры с помощью клавиши 'p' или 'ENTER'
         elif event.key == pygame.K_RETURN or event.key == pygame.K_p and not self.stats.game_active:
             # Сброс игровых настроек
             self.settings.initialize_dynamic_settings()
@@ -122,8 +125,12 @@ class AlienInvasion:
 
     def _check_bullet_alien_collisions(self):
         """Проверка попаданий в пришельцев"""
-        #При обнаружении столкновения удаляется снаряд и пришелец
+        #При обнаружении столкновения снаряда с пришельцем, удаляется снаряд и пришелец
         collisions = pygame.sprite.groupcollide(self.bullets, self.aliens, True, True)
+        if collisions:
+            for aliens in collisions.values():
+                self.stats.score += self.settings.alien_points * len(aliens)
+            self.sb.prep_score()
 
         #Проверка состояния флота и создание нового если все корабли уничтожены
         if not self.aliens:
@@ -254,6 +261,8 @@ class AlienInvasion:
         for bullet in self.bullets.sprites():
             bullet.draw_bullet()
         self.aliens.draw(self.screen)
+        #Вывод информации о счете
+        self.sb.show_score()
         #Кнопка Play отображается в том случае, если игра не активна
         if not self.stats.game_active:
             self.play_button.draw_button()
