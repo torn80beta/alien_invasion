@@ -44,6 +44,9 @@ class AlienInvasion:
         """Отслеживание событий клавиатуры и мыши"""
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                # Запись наилучшего результата в файл
+                with open('high_score.txt', 'w') as file:
+                    file.write(str(self.stats.high_score))
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
                 self._check_keydown_events(event)
@@ -88,6 +91,9 @@ class AlienInvasion:
         elif event.key == pygame.K_s:
             self.ship.moving_down = True
         elif event.key == pygame.K_q:
+            #Запись наилучшего результата в файл
+            with open('high_score.txt', 'w') as file:
+                file.write(str(self.stats.high_score))
             sys.exit()
         elif event.key == pygame.K_SPACE:
             self._fire_bullet()
