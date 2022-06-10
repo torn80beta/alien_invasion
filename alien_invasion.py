@@ -131,6 +131,7 @@ class AlienInvasion:
             for aliens in collisions.values():
                 self.stats.score += self.settings.alien_points * len(aliens)
             self.sb.prep_score()
+            self.sb.check_high_score()
 
         #Проверка состояния флота и создание нового если все корабли уничтожены
         if not self.aliens:
